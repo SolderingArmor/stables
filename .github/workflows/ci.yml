@@ -2,13 +2,18 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  test:
+  tests:
     name: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+
+      - name: intall-foundry
+        uses: onbjerg/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: install
         run: forge install
