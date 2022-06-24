@@ -3,29 +3,50 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import { TestERC20 } from "../../../contracts/test/TestERC20.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import { TestERC20 } from "../src/test/TestERC20.sol";
+import { Pool } from "../src/Pool.sol";
 
 
 contract PoolTest is Test {
+    Pool pool;
+
+    uint256 constant MAX_INT = ~uint256(0);
+
+    uint256 internal alicePk = 0xa11ce;
+    uint256 internal bobPk = 0xb0b;
+    uint256 internal calPk = 0xca1;
+
+    address payable internal alice = payable(vm.addr(alicePk));
+    address payable internal bob = payable(vm.addr(bobPk));
+    address payable internal cal = payable(vm.addr(calPk));
+
+    TestERC20 internal DAI;
+    TestERC20 internal USDC;
+    TestERC20 internal USDT;
+
+    TestERC20[] erc20s;
+
+    function _setApprovals(address _owner) internal virtual {
+        vm.startPrank(_owner);
+        for (uint256 i = 0; i < erc20s.length; ++i) {
+            erc20s[i].approve(address(pool), MAX_INT);
+        }
+
+        vm.stopPrank();
+    }
+
+
     /**
      * @dev Deploy test token contracts
      */
     function _deployTestTokenContracts() internal {
-        token1 = new TestERC20();
-        token2 = new TestERC20();
-        token3 = new TestERC20();
-        test721_1 = new TestERC721();
-        test721_2 = new TestERC721();
-        test721_3 = new TestERC721();
-        test1155_1 = new TestERC1155();
-        test1155_2 = new TestERC1155();
-        test1155_3 = new TestERC1155();
-        preapproved721 = new PreapprovedERC721(preapprovals);
+        pool = new Pool();
+        DAI = new TestERC20();
+        USDC = new TestERC20();
+        USDT = new TestERC20();
 
-        vm.label(address(token1), "token1");
-        vm.label(address(test721_1), "test721_1");
-        vm.label(address(test1155_1), "test1155_1");
-        vm.label(address(preapproved721), "preapproved721");
+        vm.label(address(DAI), "DAI");
 
         emit log("Deployed test token contracts");
     }
@@ -43,24 +64,30 @@ contract PoolTest is Test {
     }
 
     function setUp() public {
-        super.setUp();
-
         vm.label(alice, "alice");
         vm.label(bob, "bob");
         vm.label(cal, "cal");
         vm.label(address(this), "testContract");
 
         _deployTestTokenContracts();
-        erc20s = [token1, token2, token3];
-        erc721s = [test721_1, test721_2, test721_3];
-        erc1155s = [test1155_1, test1155_2, test1155_3];
+        erc20s = [DAI, USDC, USDT];
 
-        // allocate funds and tokens to test addresses
-        allocateTokensAndApprovals(address(this), uint128(MAX_INT));
-        allocateTokensAndApprovals(alice, uint128(MAX_INT));
-        allocateTokensAndApprovals(bob, uint128(MAX_INT));
-        allocateTokensAndApprovals(cal, uint128(MAX_INT));
+        _setApprovals(alice);
     }
 
-    function testSwap() public {}
+    function testSwap() public {
+        DAI.mint(address(pool), 1000e18);
+        USDC.mint(address(pool), 1000e18);
+
+        DAI.mint(alice, 100e18);
+
+        vm.prank(alice);
+        pool.swap(IERC20(address(DAI)), 100e18, IERC20(address(USDC)));
+
+        console.log(DAI.balanceOf(alice));
+        console.log(USDC.balanceOf(alice));
+
+        assertEq(DAI.balanceOf(alice), 0);
+        assertEq(USDC.balanceOf(alice), 100e18);
+    }
 }

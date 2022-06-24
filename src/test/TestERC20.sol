@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.7;
 
-import "@rari-capital/solmate/src/tokens/ERC20.sol";
+import "solmate/tokens/ERC20.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 // Used for minting test ERC20s in our tests
 contract TestERC20 is ERC20("Test20", "TST20", 18) {
