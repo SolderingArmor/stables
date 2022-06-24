@@ -3,11 +3,14 @@ on: [push, pull_request]
 
 jobs:
   test:
-    name: test
+    name: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+
+      - name: install
         run: forge install
+      - name: test
         run: forge test -vvv
