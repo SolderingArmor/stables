@@ -49,4 +49,3 @@ contract TestERC20 is ERC20("Test20", "TST20", 18) {
         ok = true;
     }
 }
-

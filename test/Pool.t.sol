@@ -4,9 +4,8 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import { TestERC20 } from "../src/test/TestERC20.sol";
-import { Pool } from "../src/Pool.sol";
-
+import {TestERC20} from "../src/test/TestERC20.sol";
+import {Pool} from "../src/Pool.sol";
 
 contract PoolTest is Test {
     Pool pool;
@@ -35,7 +34,6 @@ contract PoolTest is Test {
 
         vm.stopPrank();
     }
-
 
     /**
      * @dev Deploy test token contracts
