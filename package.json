@@ -4,5 +4,13 @@
   "main": "index.js",
   "repository": "https://github.com/Stables-Labs/stables.git",
   "author": "Igor Yalovoy <to@ylv.io>",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19"
+  },
+  "scripts": {
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
+  }
 }
