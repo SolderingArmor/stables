@@ -74,18 +74,26 @@ contract PoolTest is Test {
     }
 
     function testSwap() public {
-        DAI.mint(address(pool), 1000e18);
-        USDC.mint(address(pool), 1000e18);
+        uint256 liq =  1000e18;
+        DAI.mint(address(pool), liq);
+        USDC.mint(address(pool), liq);
 
-        DAI.mint(alice, 100e18);
+        uint256 amount = 100e18;
+        DAI.mint(alice, amount);
+
+        assertEq(DAI.balanceOf(alice), amount);
+        assertEq(USDC.balanceOf(alice), 0);
+
+        assertEq(DAI.balanceOf(address(pool)), liq);
+        assertEq(USDC.balanceOf(address(pool)), liq);
 
         vm.prank(alice);
-        pool.swap(IERC20(address(DAI)), 100e18, IERC20(address(USDC)));
+        pool.swap(IERC20(address(DAI)), amount, IERC20(address(USDC)));
 
-        console.log(DAI.balanceOf(alice));
-        console.log(USDC.balanceOf(alice));
+        assertEq(DAI.balanceOf(address(pool)), liq + amount);
+        assertEq(USDC.balanceOf(address(pool)), liq - amount);
 
         assertEq(DAI.balanceOf(alice), 0);
-        assertEq(USDC.balanceOf(alice), 100e18);
+        assertEq(USDC.balanceOf(alice), amount);
     }
 }
