@@ -74,7 +74,7 @@ contract PoolTest is Test {
     }
 
     function testSwap() public {
-        uint256 liq =  1000e18;
+        uint256 liq = 1000e18;
         DAI.mint(address(pool), liq);
         USDC.mint(address(pool), liq);
 
